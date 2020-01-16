@@ -30,7 +30,7 @@ app.get('/gets', async (req, res) => {
 
         var datas = [];
         for (var i = 0; i < results.length; i += 2) {
-            data = {};
+            var data = {};
             data.ranking = i / 2 + 1;
             data.name = results[i];
             data.score = results[i + 1];
@@ -97,7 +97,7 @@ app.get('/delall', async (req, res) => {
     }
 
     try{
-        var result= await redisHelper.redis.zincrby(key,score,name);
+        var result= await redisHelper.redis.zincrbyAsync(key,score,name);
         console.log(result);
         if(result==true){
             res.end("加分成功");
