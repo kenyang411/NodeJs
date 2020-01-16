@@ -15,7 +15,7 @@ app.get('/gets', async (req, res) => {
         //     res.end("请输入用户名");
         //     return;
         // }
-        var results = await redisHelper.redis.zrevrangeAsync(key, 0, 2, 'withscores');
+        var results = await redisHelper.redis.zrevrangeAsync(key, 0, 2, 'withscores');  //按分数排名 取出1-3名
         var length = results.length;
 
         // //根据key从redis获取数据
