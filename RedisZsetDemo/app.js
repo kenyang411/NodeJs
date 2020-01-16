@@ -7,7 +7,7 @@ const key = "lb";
 //获取信息 前100名和单个用户信息
 app.get('/gets', async (req, res) => {
     try {
-        res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+        res.writeHeader(200, { "Content-Type": "text/plain;charset=utf-8" });
         var name = req.query.name;
 
         //获取当前信息补充到后面
@@ -63,7 +63,7 @@ app.post('/add', async (req, res) => {
     dataArray.push(80);
     dataArray.push("c");
 
-    res.writeHead(200, { "Content-Type": "text/plain'charset=utf-8" });
+    res.writeHeader(200, { "Content-Type": "text/plain'charset=utf-8" });
     try {
         var result = await redisHelper.redis.zaddAsync(key,dataArray);
         res.end(JSON.stringify(result));
@@ -75,7 +75,7 @@ app.post('/add', async (req, res) => {
 
 //删除全部
 app.get('/delall', async (req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain;charset=utf-8" });
+    res.writeHeader(200, { "Content-Type": "text/plain;charset=utf-8" });
     try {
         var result = await redisHelper.redis.zremrangebyrankAsync(key, 0, -1);
         res.end("redis已清空");
@@ -83,6 +83,30 @@ app.get('/delall', async (req, res) => {
         console.log(err);
     }
 })
+
+
+//对指定成员分数累加
+ app.get('/addscore',async(req,res)=>{
+    var name=req.query.name;
+    var score=req.query.score || 0;
+    score=parseInt(score);
+    //如果有效投注为负，返回
+    if(score<0){
+        res.writeHeader(200,{"Content-Type":"text/plain;charset=utf-8"});
+        res.end(JSON.stringify({code:1,msg:"有效投注不能为负"}));
+    }
+
+    try{
+        var result= await redisHelper.redis.zincrby(key,score,name);
+        console.log(result);
+        if(result==true){
+            res.end("加分成功");
+        }
+    }catch(err){
+        console.log(err);
+    }
+
+ })
 
 
 app.listen(3000, () => {
